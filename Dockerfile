@@ -1,4 +1,4 @@
-FROM lsiobase/alpine.arm64:3.5
+FROM lsiobase/alpine.arm64:3.6
 MAINTAINER sparklyballs
 
 # set version label
