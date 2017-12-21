@@ -1,37 +1,35 @@
-FROM lsiobase/alpine.arm64:3.6
-MAINTAINER sparklyballs
+FROM lsiobase/alpine.arm64:3.7
 
 # set version label
 ARG BUILD_DATE
 ARG VERSION
 LABEL build_version="Linuxserver.io version:- ${VERSION} Build-date:- ${BUILD_DATE}"
+LABEL maintainer="sparklyballs"
 
 # copy prebuild files
 COPY prebuilds/ /prebuilds/
 
-# package version settings
+# environment settings
+ENV BOOKSONIC_OPT_PREFIX="subsonic"
+
+# package settings
 ARG BOOKSONIC_VER="1.1.Beta1"
 ARG JETTY_VER="9.3.14.v20161028"
 
-# environment settings
-ENV BOOKSONIC_OPT_PREFIX="subsonic"
-
-# install build packages
 RUN \
+ echo "**** install build packages ****" && \
  apk add --no-cache --virtual=build-dependencies \
 	curl \
-	openjdk8 \
-	tar && \
-
-# install runtime packages
+	tar \
+	openjdk8 && \
+ echo "**** install runtime packages ****" && \
  apk add --no-cache \
 	ffmpeg \
 	flac \
 	lame \
-	openjdk8-jre \
-	ttf-dejavu && \
-
-# install jetty-runner
+	ttf-dejavu \
+	openjdk8-jre && \
+ echo "**** install jetty-runner ****" && \
  mkdir -p \
 	/tmp/jetty && \
  cp /prebuilds/* /tmp/jetty/ && \
@@ -42,15 +40,13 @@ RUN \
  install -m644 -D "jetty-runner-$JETTY_VER.jar" \
 	/usr/share/java/jetty-runner.jar && \
  install -m755 -D jetty-runner /usr/bin/jetty-runner && \
-
-# install booksonic
+ echo "**** install booksonic ****" && \
  mkdir -p \
 	/app/booksonic && \
  curl -o \
  /app/booksonic/booksonic.war -L \
 	"https://github.com/popeen/Popeens-Subsonic/releases/download/${BOOKSONIC_VER}/booksonic.war" && \
-
-# cleanup
+ echo "**** cleanup ****" && \
  apk del --purge \
 	build-dependencies && \
  rm -rf \
@@ -59,6 +55,6 @@ RUN \
 # add local files
 COPY root/ /
 
-# ports and volumes
+# ports and volumes
 EXPOSE 4040
 VOLUME /books /config /podcasts

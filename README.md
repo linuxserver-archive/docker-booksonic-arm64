@@ -88,5 +88,6 @@ Default user/pass is admin/admin
 
 ## Versions
 
++ **19.12.17:** Rebase to alpine 3.7.
 + **09.07.17:** Rebase to alpine 3.6.
 + **13.12.16:** Initial Release.
